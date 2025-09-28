@@ -2,25 +2,78 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vedma Simulator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Vedma Clicker</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
     <div id="app-container">
-        <h1>Vedma Simulator</h1>
-        
-        <div id="coin-counter">
-            <span class="label">Коины:</span>
-            <span id="balance-display">0</span> 🔮
+        <div id="header">
+            <div class="balance-info">
+                <span id="balance-display">0</span>
+                <img src="https://emojipedia-us.s3.amazonaws.com/source/skype/289/coin_1fa99.png" class="coin-icon" alt="coin">
+            </div>
+            <div class="passive-income-info">
+                +<span id="passive-income-display">0</span>/сек
+            </div>
         </div>
 
-        <button id="main-button">
-            Сварить Зелье
-        </button>
-
-        <div id="click-feedback-container">
+        <main id="main-content">
+            <div id="main-screen" class="screen active">
+                <div id="click-area">
+                    <img src="https://i.imgur.com/S6bA2wP.png" alt="Magic Potion" id="main-potion-img">
+                </div>
+                <div id="click-feedback-container"></div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-label">До следующего уровня</div>
+                    <div class="progress-bar">
+                        <div id="progress-bar-fill"></div>
+                    </div>
+                </div>
             </div>
+
+            <div id="shop-screen" class="screen">
+                <h2>Лавка Улучшений</h2>
+                <div id="shop-items-container">
+                    </div>
+            </div>
+
+            <div id="leaderboard-screen" class="screen">
+                <h2>Зал Славы</h2>
+                <div id="leaderboard-list">
+                    <div class="leaderboard-item">
+                        <span>1. 🧙‍♂️ anatoliy_nagibator</span>
+                        <span>1,337,228</span>
+                    </div>
+                    <div class="leaderboard-item">
+                        <span>2. 🧛‍♀️ vampir_essa</span>
+                        <span>980,111</span>
+                    </div>
+                    <div class="leaderboard-item">
+                        <span>3. 🧟‍♂️ zombotron</span>
+                        <span>550,987</span>
+                    </div>
+                     <div class="leaderboard-item my-score">
+                        <span>42. 👤 alterikk (Вы)</span>
+                        <span id="leaderboard-my-score">0</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="transfer-screen" class="screen">
+                 <h2>Перевод другу</h2>
+                 <p class="placeholder-text">Эта функция требует подключения к серверу. Здесь можно будет ввести ID друга и сумму для перевода.</p>
+            </div>
+
+        </main>
+
+        <nav id="bottom-nav">
+            <button class="nav-btn active" data-screen="main-screen">🔮</button>
+            <button class="nav-btn" data-screen="shop-screen">🛒</button>
+            <button class="nav-btn" data-screen="leaderboard-screen">🏆</button>
+            <button class="nav-btn" data-screen="transfer-screen">💸</button>
+        </nav>
     </div>
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
