@@ -1,0 +1,109 @@
+/* Использование переменных Telegram для нативного вида */
+:root {
+    --tg-bg: var(--tg-theme-bg-color, #222222); /* Фон */
+    --tg-text: var(--tg-theme-text-color, #ffffff); /* Основной текст */
+    --tg-hint: var(--tg-theme-hint-color, #aaaaaa); /* Подсказки */
+    
+    /* Ведьмовские Цвета */
+    --vedma-primary: #ff8c00; /* Оранжевый - как огонь */
+    --vedma-secondary: #800080; /* Темно-фиолетовый - как магия */
+    --vedma-accent: #ff4500; /* Более яркий оранжевый */
+}
+
+body {
+    background-color: var(--tg-bg);
+    color: var(--tg-text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+#app-container {
+    text-align: center;
+    width: 100%;
+    max-width: 400px;
+}
+
+h1 {
+    color: var(--vedma-primary);
+    font-size: 2.5em;
+    margin-bottom: 40px;
+    text-shadow: 0 0 10px var(--vedma-secondary); /* Магическое свечение */
+}
+
+#coin-counter {
+    background-color: color-mix(in srgb, var(--tg-bg) 70%, var(--vedma-secondary)); /* Фон счётчика с фиолетовым оттенком */
+    border: 2px solid var(--vedma-primary);
+    padding: 15px;
+    border-radius: 15px;
+    font-size: 1.5em;
+    margin-bottom: 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#coin-counter .label {
+    color: var(--tg-hint);
+    font-size: 0.8em;
+}
+
+#balance-display {
+    font-weight: bold;
+    color: var(--tg-text);
+}
+
+/* Главная кнопка */
+#main-button {
+    width: 100%;
+    padding: 20px;
+    font-size: 1.8em;
+    font-weight: bold;
+    color: white;
+    background: linear-gradient(135deg, var(--vedma-primary), var(--vedma-accent)); /* Градиент огня */
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    box-shadow: 0 8px 15px rgba(255, 140, 0, 0.4);
+    transition: transform 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
+}
+
+#main-button:active {
+    transform: translateY(2px);
+    box-shadow: 0 4px 8px rgba(255, 140, 0, 0.6);
+}
+
+/* Эффект +1 */
+#click-feedback-container {
+    position: relative;
+    height: 30px; /* Чтобы не влиял на остальные элементы */
+    pointer-events: none; /* Чтобы не мешал нажимать на кнопку */
+}
+
+.feedback-text {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--vedma-accent);
+    font-weight: bold;
+    font-size: 1.5em;
+    opacity: 0;
+    animation: floatUp 0.8s ease-out forwards;
+}
+
+@keyframes floatUp {
+    0% {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50px);
+    }
+}
