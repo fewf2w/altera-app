@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- ИНИЦИАЛИЗАЦИЯ TELEGRAM WEB APP ---
     if (window.Telegram && window.Telegram.WebApp) {
         window.Telegram.WebApp.ready();
-        window.Telegram.WebApp.expand(); // Расширяем приложение на весь экран
+        window.Telegram.WebApp.expand();
         window.Telegram.WebApp.MainButton.hide();
     }
 
@@ -11,10 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
         coins: 0,
         clickValue: 1,
         passiveIncome: 0,
-        level: 1,
-        clicksToNextLevel: 100,
-        currentClicks: 0,
-        purchasedItems: [] // ID купленных товаров
+        purchasedItems: []
     };
 
     // --- DOM ЭЛЕМЕНТЫ ---
@@ -25,19 +22,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const navButtons = document.querySelectorAll('.nav-btn');
     const screens = document.querySelectorAll('.screen');
     const shopContainer = document.getElementById('shop-items-container');
-    const myScoreDisplay = document.getElementById('leaderboard-my-score');
-    const progressBarFill = document.getElementById('progress-bar-fill');
+    const paginationContainer = document.getElementById('shop-pagination');
 
-    // --- ДАННЫЕ МАГАЗИНА ---
+    // --- ДАННЫЕ МАГАЗИНА (добавил больше товаров для примера) ---
     const shopItems = [
         { id: 'click_1', name: 'Магический курсор', price: 50, bonus: 1, type: 'click', description: '+1 коин за клик' },
         { id: 'passive_1', name: 'Грибная ферма', price: 200, bonus: 1, type: 'passive', description: '+1 коин в секунду' },
-        { id: 'click_2', name: 'Зачарованная перчатка', price: 500, bonus: 5, type: 'click', description: '+5 коинов за клик' }
+        { id: 'click_2', name: 'Зачарованная перчатка', price: 500, bonus: 5, type: 'click', description: '+5 коинов за клик' },
+        { id: 'passive_2', name: 'Корень мандрагоры', price: 1200, bonus: 5, type: 'passive', description: '+5 коинов в секунду' },
+        { id: 'click_3', name: 'Талисман силы', price: 3000, bonus: 20, type: 'click', description: '+20 коинов за клик' },
+        { id: 'passive_3', name: 'Призрачный помощник', price: 10000, bonus: 25, type: 'passive', description: '+25 коинов в секунду' }
     ];
 
     // --- ФУНКЦИИ ---
 
-    // Загрузка/Сохранение прогресса
     function saveData() {
         localStorage.setItem('vedma_clicker_state', JSON.stringify(state));
     }
@@ -49,42 +47,24 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // Обновление отображения всех данных
     function updateUI() {
         balanceDisplay.textContent = Math.floor(state.coins).toLocaleString();
         passiveIncomeDisplay.textContent = state.passiveIncome.toLocaleString();
-        myScoreDisplay.textContent = Math.floor(state.coins).toLocaleString();
         
-        const progress = (state.currentClicks / state.clicksToNextLevel) * 100;
-        progressBarFill.style.width = `${progress}%`;
-
-        // Обновляем состояние кнопок в магазине
         document.querySelectorAll('.buy-btn').forEach(btn => {
             const itemId = btn.dataset.itemId;
             const item = shopItems.find(i => i.id === itemId);
-            if (state.coins < item.price || state.purchasedItems.includes(itemId)) {
-                btn.disabled = true;
-            } else {
-                btn.disabled = false;
-            }
-             if (state.purchasedItems.includes(itemId)) {
+            if (!item) return;
+
+            btn.disabled = state.coins < item.price || state.purchasedItems.includes(itemId);
+            if (state.purchasedItems.includes(itemId)) {
                 btn.textContent = 'Куплено';
             }
         });
     }
 
-    // Логика клика
     function handleClick() {
         state.coins += state.clickValue;
-        state.currentClicks += state.clickValue;
-        
-        if(state.currentClicks >= state.clicksToNextLevel) {
-            // Level up logic can be added here
-            state.level++;
-            state.currentClicks = 0;
-            state.clicksToNextLevel *= 2; // Усложняем следующий уровень
-        }
-
         showFeedback(`+${state.clickValue}`);
         updateUI();
 
@@ -93,19 +73,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Анимация "+1"
     function showFeedback(text) {
         const feedback = document.createElement('div');
         feedback.textContent = text;
         feedback.classList.add('feedback-text');
-        // Случайное положение для живости
         feedback.style.left = `${Math.random() * 80 + 10}%`;
         feedbackContainer.appendChild(feedback);
 
         feedback.addEventListener('animationend', () => feedback.remove());
     }
 
-    // Навигация по экранам
     function showScreen(screenId) {
         screens.forEach(screen => screen.classList.remove('active'));
         document.getElementById(screenId).classList.add('active');
@@ -115,29 +92,54 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // Рендер магазина
     function renderShop() {
         shopContainer.innerHTML = '';
-        shopItems.forEach(item => {
-            const itemElement = document.createElement('div');
-            itemElement.classList.add('shop-item');
-            itemElement.innerHTML = `
-                <div class="shop-item-info">
-                    <h3>${item.name}</h3>
-                    <p>${item.description}</p>
-                </div>
-                <button class="buy-btn" data-item-id="${item.id}">${item.price.toLocaleString()}</button>
-            `;
-            shopContainer.appendChild(itemElement);
-        });
+        paginationContainer.innerHTML = '';
         
-        // Добавляем обработчики событий на новые кнопки
+        const itemsPerPage = 3;
+        const pageCount = Math.ceil(shopItems.length / itemsPerPage);
+
+        for (let i = 0; i < pageCount; i++) {
+            // Создаем страницу
+            const page = document.createElement('div');
+            page.classList.add('shop-page');
+            
+            // Создаем точку для пагинации
+            const dot = document.createElement('div');
+            dot.classList.add('dot');
+            if (i === 0) dot.classList.add('active');
+            paginationContainer.appendChild(dot);
+            
+            // Заполняем страницу товарами
+            const pageItems = shopItems.slice(i * itemsPerPage, (i + 1) * itemsPerPage);
+            pageItems.forEach(item => {
+                const itemElement = document.createElement('div');
+                itemElement.classList.add('shop-item');
+                itemElement.innerHTML = `
+                    <div class="shop-item-info">
+                        <h3>${item.name}</h3>
+                        <p>${item.description}</p>
+                    </div>
+                    <button class="buy-btn" data-item-id="${item.id}">${item.price.toLocaleString()}</button>
+                `;
+                page.appendChild(itemElement);
+            });
+            shopContainer.appendChild(page);
+        }
+        
         document.querySelectorAll('.buy-btn').forEach(btn => {
             btn.addEventListener('click', () => buyItem(btn.dataset.itemId));
         });
     }
     
-    // Покупка товара
+    function updatePagination() {
+        const dots = paginationContainer.querySelectorAll('.dot');
+        const currentPage = Math.round(shopContainer.scrollLeft / shopContainer.clientWidth);
+        dots.forEach((dot, index) => {
+            dot.classList.toggle('active', index === currentPage);
+        });
+    }
+
     function buyItem(itemId) {
         const item = shopItems.find(i => i.id === itemId);
         if (!item || state.coins < item.price || state.purchasedItems.includes(itemId)) {
@@ -147,11 +149,8 @@ document.addEventListener('DOMContentLoaded', () => {
         state.coins -= item.price;
         state.purchasedItems.push(itemId);
 
-        if (item.type === 'click') {
-            state.clickValue += item.bonus;
-        } else if (item.type === 'passive') {
-            state.passiveIncome += item.bonus;
-        }
+        if (item.type === 'click') state.clickValue += item.bonus;
+        else if (item.type === 'passive') state.passiveIncome += item.bonus;
         
         if (window.Telegram && window.Telegram.WebApp.HapticFeedback) {
             window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
@@ -160,15 +159,11 @@ document.addEventListener('DOMContentLoaded', () => {
         updateUI();
     }
     
-    // Пассивный доход
     setInterval(() => {
         state.coins += state.passiveIncome;
-        // Мы не хотим вызывать полный updateUI каждую секунду, только баланс
         balanceDisplay.textContent = Math.floor(state.coins).toLocaleString();
-        myScoreDisplay.textContent = Math.floor(state.coins).toLocaleString();
     }, 1000);
 
-    // Сохранение прогресса раз в 5 секунд
     setInterval(saveData, 5000);
 
     // --- ИНИЦИАЛИЗАЦИЯ ПРИЛОЖЕНИЯ ---
@@ -177,6 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
     updateUI();
 
     clickArea.addEventListener('click', handleClick);
+    shopContainer.addEventListener('scroll', updatePagination);
 
     navButtons.forEach(button => {
         button.addEventListener('click', () => {
