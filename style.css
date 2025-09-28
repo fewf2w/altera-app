@@ -16,7 +16,7 @@ body {
     display: flex;
     flex-direction: column;
     height: 100vh;
-    overflow: hidden; /* Убираем скролл */
+    overflow: hidden;
 }
 
 #app-container {
@@ -47,8 +47,7 @@ body {
 }
 
 .coin-icon {
-    width: 30px;
-    height: 30px;
+    font-size: 0.8em;
     margin-left: 8px;
 }
 
@@ -61,16 +60,19 @@ body {
 #main-content {
     flex-grow: 1;
     position: relative;
+    overflow: hidden; /* Важно для дочерних скроллов */
 }
 
 .screen {
     display: none;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start; /* Начинаем сверху */
     height: 100%;
     width: 100%;
     position: absolute;
+    padding-top: 20px;
+    box-sizing: border-box;
 }
 
 .screen.active {
@@ -80,16 +82,20 @@ body {
 /* --- Главный экран --- */
 #click-area {
     cursor: pointer;
-    user-select: none; /* Чтобы картинка не выделялась */
-}
-
-#main-potion-img {
-    width: 200px;
-    height: 200px;
+    user-select: none;
     transition: transform 0.1s ease-out;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60%;
 }
 
-#main-potion-img:active {
+#main-potion-emoji {
+    font-size: 150px;
+    filter: drop-shadow(0 0 15px var(--primary-accent));
+}
+
+#click-area:active {
     transform: scale(0.95);
 }
 
@@ -118,55 +124,47 @@ body {
     100% { opacity: 0; transform: translate(-50%, -100px); }
 }
 
-.progress-bar-container {
-    width: 90%;
-    position: absolute;
-    bottom: 20px;
+/* --- Магазин --- */
+#shop-screen h2 {
+    flex-shrink: 0; /* Заголовок не сжимается */
 }
 
-.progress-bar-label {
-    font-size: 0.8em;
-    color: #aaa;
-    margin-bottom: 5px;
-}
-
-.progress-bar {
+#shop-items-container {
     width: 100%;
-    height: 10px;
-    background-color: var(--dark-surface);
-    border-radius: 5px;
-    overflow: hidden;
+    height: 80%;
+    display: flex;
+    overflow-x: auto;
+    /* Магия плавного свайпа */
+    scroll-snap-type: x mandatory;
+    /* Прячем скроллбар */
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+#shop-items-container::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
 }
 
-#progress-bar-fill {
-    width: 0%;
+.shop-page {
+    width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, var(--secondary-accent), var(--primary-accent));
-    transition: width 0.3s ease;
-}
-
-/* --- Магазин и Лидерборд --- */
-h2 {
-    color: var(--primary-accent);
-    margin-bottom: 20px;
-}
-
-#shop-items-container, #leaderboard-list {
-    width: 100%;
+    flex: 0 0 100%; /* Каждая страница занимает 100% ширины */
+    scroll-snap-align: start; /* Привязка к началу элемента */
     display: flex;
     flex-direction: column;
     gap: 10px;
-    overflow-y: auto;
-    max-height: calc(100% - 50px);
+    padding: 0 5px; /* Небольшие отступы по бокам */
+    box-sizing: border-box;
 }
 
-.shop-item, .leaderboard-item {
+.shop-item {
     background-color: var(--dark-surface);
     padding: 15px;
     border-radius: var(--border-radius);
     display: flex;
     justify-content: space-between;
     align-items: center;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .shop-item-info h3 { margin: 0 0 5px 0; }
@@ -187,14 +185,24 @@ h2 {
     cursor: not-allowed;
 }
 
-.leaderboard-item.my-score {
-    border: 2px solid var(--primary-accent);
+/* Пагинация (точки) */
+#shop-pagination {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 15px;
 }
 
-.placeholder-text {
-    color: #aaa;
-    text-align: center;
-    padding: 20px;
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #555;
+    transition: background-color 0.3s;
+}
+
+.dot.active {
+    background-color: var(--primary-accent);
 }
 
 /* --- Нижняя навигация --- */
@@ -204,7 +212,8 @@ h2 {
     padding: 10px 0;
     background-color: var(--dark-surface);
     border-radius: var(--border-radius);
-    margin-top: auto; /* Прижимаем к низу */
+    margin-top: auto;
+    flex-shrink: 0;
 }
 
 .nav-btn {
