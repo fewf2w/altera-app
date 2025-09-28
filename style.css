@@ -1,109 +1,222 @@
-/* Использование переменных Telegram для нативного вида */
+/* Использование переменных для гибкости */
 :root {
-    --tg-bg: var(--tg-theme-bg-color, #222222); /* Фон */
-    --tg-text: var(--tg-theme-text-color, #ffffff); /* Основной текст */
-    --tg-hint: var(--tg-theme-hint-color, #aaaaaa); /* Подсказки */
-    
-    /* Ведьмовские Цвета */
-    --vedma-primary: #ff8c00; /* Оранжевый - как огонь */
-    --vedma-secondary: #800080; /* Темно-фиолетовый - как магия */
-    --vedma-accent: #ff4500; /* Более яркий оранжевый */
+    --tg-bg: var(--tg-theme-bg-color, #121212);
+    --tg-text: var(--tg-theme-text-color, #ffffff);
+    --primary-accent: #8A2BE2; /* Неоновый фиолетовый */
+    --secondary-accent: #00BFFF; /* Неоновый голубой */
+    --dark-surface: #1e1e1e;
+    --border-radius: 16px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
 body {
     background-color: var(--tg-bg);
     color: var(--tg-text);
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
     margin: 0;
-    padding: 20px;
-    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden; /* Убираем скролл */
 }
 
 #app-container {
-    text-align: center;
     width: 100%;
-    max-width: 400px;
-}
-
-h1 {
-    color: var(--vedma-primary);
-    font-size: 2.5em;
-    margin-bottom: 40px;
-    text-shadow: 0 0 10px var(--vedma-secondary); /* Магическое свечение */
-}
-
-#coin-counter {
-    background-color: color-mix(in srgb, var(--tg-bg) 70%, var(--vedma-secondary)); /* Фон счётчика с фиолетовым оттенком */
-    border: 2px solid var(--vedma-primary);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
     padding: 15px;
-    border-radius: 15px;
-    font-size: 1.5em;
-    margin-bottom: 50px;
+    box-sizing: border-box;
+}
+
+/* --- Верхняя панель --- */
+#header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: var(--dark-surface);
+    border-radius: var(--border-radius);
+    margin-bottom: 20px;
+}
+
+.balance-info {
+    font-size: 1.8em;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+}
+
+.coin-icon {
+    width: 30px;
+    height: 30px;
+    margin-left: 8px;
+}
+
+.passive-income-info {
+    font-size: 1em;
+    color: var(--secondary-accent);
+}
+
+/* --- Контент и экраны --- */
+#main-content {
+    flex-grow: 1;
+    position: relative;
+}
+
+.screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+}
+
+.screen.active {
+    display: flex;
+}
+
+/* --- Главный экран --- */
+#click-area {
+    cursor: pointer;
+    user-select: none; /* Чтобы картинка не выделялась */
+}
+
+#main-potion-img {
+    width: 200px;
+    height: 200px;
+    transition: transform 0.1s ease-out;
+}
+
+#main-potion-img:active {
+    transform: scale(0.95);
+}
+
+#click-feedback-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    width: 200px;
+    height: 300px;
+}
+
+.feedback-text {
+    position: absolute;
+    left: 50%;
+    font-size: 2em;
+    font-weight: bold;
+    color: var(--primary-accent);
+    opacity: 0;
+    animation: floatUp 1s ease-out forwards;
+}
+
+@keyframes floatUp {
+    0% { opacity: 1; transform: translate(-50%, 0); }
+    100% { opacity: 0; transform: translate(-50%, -100px); }
+}
+
+.progress-bar-container {
+    width: 90%;
+    position: absolute;
+    bottom: 20px;
+}
+
+.progress-bar-label {
+    font-size: 0.8em;
+    color: #aaa;
+    margin-bottom: 5px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 10px;
+    background-color: var(--dark-surface);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+#progress-bar-fill {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, var(--secondary-accent), var(--primary-accent));
+    transition: width 0.3s ease;
+}
+
+/* --- Магазин и Лидерборд --- */
+h2 {
+    color: var(--primary-accent);
+    margin-bottom: 20px;
+}
+
+#shop-items-container, #leaderboard-list {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow-y: auto;
+    max-height: calc(100% - 50px);
+}
+
+.shop-item, .leaderboard-item {
+    background-color: var(--dark-surface);
+    padding: 15px;
+    border-radius: var(--border-radius);
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-#coin-counter .label {
-    color: var(--tg-hint);
-    font-size: 0.8em;
-}
+.shop-item-info h3 { margin: 0 0 5px 0; }
+.shop-item-info p { margin: 0; font-size: 0.9em; color: #aaa; }
 
-#balance-display {
-    font-weight: bold;
-    color: var(--tg-text);
-}
-
-/* Главная кнопка */
-#main-button {
-    width: 100%;
-    padding: 20px;
-    font-size: 1.8em;
-    font-weight: bold;
-    color: white;
-    background: linear-gradient(135deg, var(--vedma-primary), var(--vedma-accent)); /* Градиент огня */
+.buy-btn {
+    padding: 10px 20px;
     border: none;
-    border-radius: 20px;
+    background-color: var(--primary-accent);
+    color: white;
+    border-radius: 12px;
     cursor: pointer;
-    box-shadow: 0 8px 15px rgba(255, 140, 0, 0.4);
-    transition: transform 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
-}
-
-#main-button:active {
-    transform: translateY(2px);
-    box-shadow: 0 4px 8px rgba(255, 140, 0, 0.6);
-}
-
-/* Эффект +1 */
-#click-feedback-container {
-    position: relative;
-    height: 30px; /* Чтобы не влиял на остальные элементы */
-    pointer-events: none; /* Чтобы не мешал нажимать на кнопку */
-}
-
-.feedback-text {
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    color: var(--vedma-accent);
     font-weight: bold;
-    font-size: 1.5em;
-    opacity: 0;
-    animation: floatUp 0.8s ease-out forwards;
 }
 
-@keyframes floatUp {
-    0% {
-        opacity: 1;
-        transform: translate(-50%, 0);
-    }
-    100% {
-        opacity: 0;
-        transform: translate(-50%, -50px);
-    }
+.buy-btn:disabled {
+    background-color: #555;
+    cursor: not-allowed;
+}
+
+.leaderboard-item.my-score {
+    border: 2px solid var(--primary-accent);
+}
+
+.placeholder-text {
+    color: #aaa;
+    text-align: center;
+    padding: 20px;
+}
+
+/* --- Нижняя навигация --- */
+#bottom-nav {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+    background-color: var(--dark-surface);
+    border-radius: var(--border-radius);
+    margin-top: auto; /* Прижимаем к низу */
+}
+
+.nav-btn {
+    background: none;
+    border: none;
+    color: #777;
+    font-size: 2em;
+    cursor: pointer;
+    transition: color 0.2s, transform 0.2s;
+}
+
+.nav-btn.active {
+    color: var(--primary-accent);
+    transform: scale(1.2);
 }
